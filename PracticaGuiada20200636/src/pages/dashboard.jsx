@@ -1,9 +1,8 @@
 import React from "react";
 import "./Dashboard.css";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-// dashboard.jsx
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -21,6 +20,12 @@ const Dashboard = () => {
         <p className="dashboard-user">
           Hola, <span>{user || "Usuario logueado"}</span>
         </p>
+        
+        <div className="dashboard-navigation">
+          <Link to="/information" className="dashboard-link">Ver información</Link>
+          <Link to="/public" className="dashboard-link">Ir a página pública</Link>
+        </div>
+        
         <button className="dashboard-button" onClick={handleLogout}>
           Cerrar sesión
         </button>

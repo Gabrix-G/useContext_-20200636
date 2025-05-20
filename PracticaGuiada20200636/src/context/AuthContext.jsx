@@ -1,59 +1,50 @@
-import React from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useContext } from "react";
+
+// Creamos el contexto de autenticación
 const AuthContext = createContext();
-import { toast } from "react-hot-toast";
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const Login = (email, password) => {
-    if (!email || !password) {
-      toast.error("Por favor, completa todos los campos.");
-      return false;
-    } else if (email == "correo@correo.com" && password == "123456") {
-      localStorage.setItem("user", JSON.stringify({ email }));
-      setUser(email);
-      setIsLoggedIn(true);
-
-      toast.success("Inicio de sesión exitoso.");
-      return true;
-    } else {
-      toast.error("Credenciales incorrectas. Por favor, intenta de nuevo.");
-      setIsLoggedIn(false);
-      return false;
-    }
-  };
-
-  const logOut = () => {
-    try {
-      localStorage.removeItem("user");
-      setUser(null);
-      setIsLoggedIn(false);
-      toast.success("Sesión cerrada.");
-      return true;
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
-      toast.error("Error al cerrar sesión.");
-      return false;
-    }
-  };
-
-  // verifica si hay un usuario guardado en el localStorage al cargar la aplicación
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
-
-  return (
-    <AuthContext.Provider
-      value={{ user, Login, logOut, isLoggedIn, setIsLoggedIn }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+// Hook personalizado para usar el contexto de autenticación
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth debe ser usado dentro de un AuthProvider");
+  }
+  return context;
 };
 
-export const useAuth = () => useContext(AuthContext);
+// Proveedor del contexto de autenticación
+export const AuthProvider = ({ children }) => {
+  // Estado para manejar si el usuario está autenticado
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Estado para guardar el email del usuario autenticado
+  const [user, setUser] = useState("");
+
+  // Función para iniciar sesión
+  const Login = (email, password) => {
+    // Aquí podrías hacer una llamada a una API real
+    // Para este ejemplo, aceptamos cualquier email con una contraseña "123456"
+    if (password === "123456") {
+      setIsLoggedIn(true);
+      setUser(email);
+      return true;
+    }
+    return false;
+  };
+
+  // Función para cerrar sesión
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUser("");
+    return true;
+  };
+
+  // Proporcionamos los valores del contexto
+  const value = {
+    isLoggedIn,
+    user,
+    Login,
+    logout
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

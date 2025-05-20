@@ -4,26 +4,31 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 
 import { AuthProvider } from "./context/AuthContext";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Information from "./pages/Information";
-import dashboard from "./pages/dashboard";
+import Dashboard from "./pages/dashboard"; // Corregido: 'Dashboard' en mayúscula
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
+import PublicPage from "./pages/PublicPage"; // Nueva página pública
 
 function App() {
   const [count, setCount] = useState(0);
-  
-  console.log("App component rendering"); // Añadido para depuración
   
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
+          
+          {/* Rutas protegidas */}
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/information" element={<Information />} />
           </Route>
-          <Route path="/information" element={<Information />} />
+          
+          {/* Ruta pública */}
+          <Route path="/public" element={<PublicPage />} />
+          
           <Route path="/home" element={
             <>
               <div>
@@ -46,6 +51,14 @@ function App() {
               <p className="read-the-docs">
                 Click on the Vite and React logos to learn more
               </p>
+              <nav>
+                <ul style={{ listStyle: 'none', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                  <li><Link to="/">Login</Link></li>
+                  <li><Link to="/dashboard">Dashboard</Link></li>
+                  <li><Link to="/information">Información</Link></li>
+                  <li><Link to="/public">Página Pública</Link></li>
+                </ul>
+              </nav>
             </>
           } />
         </Routes>
